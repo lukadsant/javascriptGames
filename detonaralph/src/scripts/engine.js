@@ -6,17 +6,41 @@ const state = {
         score: document.querySelector('#score'),
     },
     values:{
-        timerId: null,
+
         gameVelocity: 1000,
         hitPosition:0,
-        result:0
+        result:0,
+        currentTime : 60
     },
+    actions:{
+        timerId: setInterval(randomSquare, 1000),
+        countdownTimerId: setInterval(countdown, 1000)
+    }
 };
 
-function moveenemy(){
-    state.values.timerId = setInterval(randomSquare, state.values.gameVelocity );
+//function moveenemy(){
+//    state.values.timerId = setInterval(randomSquare, state.values.gameVelocity );
+//
+//}
 
+function countdown(){
+    state.values.currentTime--;
+
+    state.view.timeLeft.textContent = state.values.currentTime;
+
+    if( state.values.currentTime < 0){
+        clearInterval(state.actions.countdownTimerId);
+        clearInterval(state.actions.timerId);
+        alert('Game Over' + state.values.result);
+    }
 }
+
+function playsound(audioname){
+    let audio = new Audio(`./src/audios/${audioname}.mp3`);
+    audio.volume=0.2
+    audio.play();
+}
+
 function randomSquare(){
     state.view.squares.forEach(square => {
         square.classList.remove('enemy');
@@ -38,13 +62,14 @@ function addListenerHitbox(){
                 state.values.result++;
                 state.view.score.textContent = state.values.result;
                 state.values.hitPosition=null;
+                playsound("detonar");
             }
         });
     });
 }
 
 function init(){
-    moveenemy();
+   // moveenemy();
     addListenerHitbox();
 }
 
